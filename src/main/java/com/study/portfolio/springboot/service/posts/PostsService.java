@@ -2,6 +2,7 @@ package com.study.portfolio.springboot.service.posts;
 
 import com.study.portfolio.springboot.domain.posts.Posts;
 import com.study.portfolio.springboot.domain.posts.PostsRepository;
+import com.study.portfolio.springboot.web.dto.PostsListResponseDto;
 import com.study.portfolio.springboot.web.dto.PostsResponseDto;
 import com.study.portfolio.springboot.web.dto.PostsSaveRequestDto;
 import com.study.portfolio.springboot.web.dto.PostsUpdateRequestDto;
@@ -10,6 +11,8 @@ import org.hibernate.boot.model.naming.IllegalIdentifierException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -37,5 +40,20 @@ public class PostsService {
                 .orElseThrow(() -> new IllegalIdentifierException("해당게시글이 없습니다. id = " + id));
 
         return new PostsResponseDto(entity);
+    }
+
+    @Transactional
+    public List<PostsListResponseDto> findAllDesc() {
+        return postsRepository.findAllDesc().stream()
+                .map(PostsListResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        Posts posts = postsRepository.findById(id)
+                .orElseThrow(() -> new IllegalIdentifierException("해당게시글이 없습니다. id = " + id));
+
+        postsRepository.delete(posts);
     }
 }
